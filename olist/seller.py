@@ -142,7 +142,12 @@ class Seller:
         'seller_id', 'share_of_five_stars', 'share_of_one_stars', 'review_score'
         """
 
-        pass  # YOUR CODE HERE
+        from olist.order import Order
+        sellers = self.data['order_items'][['order_id','seller_id']].drop_duplicates()
+        reviews = Order().get_review_score()
+        tmp1 = sellers.merge(reviews, on='order_id')
+        tmp2 = tmp1.groupby(['seller_id']).mean().reset_index().rename(columns={'dim_is_five_star': 'share_of_five_stars', 'dim_is_one_star': 'share_of_one_stars'})
+        return tmp2
 
     def get_training_data(self):
         """
